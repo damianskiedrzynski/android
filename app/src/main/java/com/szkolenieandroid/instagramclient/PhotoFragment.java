@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.szkolenieandroid.instagramclient.network.UserPhoto;
 
@@ -29,8 +30,18 @@ public class PhotoFragment extends Fragment{
         return rootView;
     }
 
-    private void presentUserPhoto(View rootView) {
+    private void presentUserPhoto(final View rootView) {
         ImageView photoView = (ImageView) rootView.findViewById(R.id.photoImageView);
-        Picasso.with(getActivity()).load(userPhoto.getPhotoStandardURL()).into(photoView);
+        Picasso.with(getActivity()).load(userPhoto.getPhotoStandardURL()).into(photoView, new Callback() {
+            @Override
+            public void onSuccess() {
+                rootView.findViewById(R.id.progressBar).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
     }
 }
