@@ -2,6 +2,11 @@ package com.szkolenieandroid.instagramclient;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +21,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class UserPhotosActivity extends Activity {
+public class UserPhotosActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class UserPhotosActivity extends Activity {
                 for(UserPhoto photo:userMedia.getUserPhotos()) {
                     Log.e("user phot url", photo.getPhotoStandardURL());
                 }
+                presentPhotos(userMedia);
             }
 
             @Override
@@ -46,6 +52,38 @@ public class UserPhotosActivity extends Activity {
             }
         });
     }
+    ViewPager viewPager;
+    private void presentPhotos(UserMedia userMedia) {
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        InstagramPhotosAdapter instagramPhotosAdapter = new InstagramPhotosAdapter(getSupportFragmentManager());
+        instagramPhotosAdapter.setUserMedia(userMedia);
+        viewPager.setAdapter(instagramPhotosAdapter);
+
+    }
 
 
+    class InstagramPhotosAdapter extends FragmentStatePagerAdapter {
+
+        public void setUserMedia(UserMedia userMedia) {
+            this.userMedia = userMedia;
+        }
+
+        UserMedia userMedia;
+
+        public InstagramPhotosAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            PhotoFragment photoFragment = new PhotoFragment();
+            photoFragment.setUserPhoto(userMedia.getUserPhotos().get(i));
+            return photoFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return userMedia.getUserPhotos().size();
+        }
+    }
 }
